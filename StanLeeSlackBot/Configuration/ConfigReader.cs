@@ -22,8 +22,5 @@ namespace StanLeeSlackBot.Configuration
         public bool HelpEnabled { get; set; } = true;
         public bool StatsEnabled { get; set; } = true;
         public bool AboutEnabled { get; set; } = true;
-
-	    public string MarvelPublicKey => GetConfigEntry<string>("Marvel:publicKey");
-	    public string MarvelPrivateKey => GetConfigEntry<string>("Marvel:privateKey");
 	}
 }

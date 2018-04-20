@@ -3,6 +3,7 @@ using Common.Logging;
 using Noobot.Core;
 using Noobot.Core.Configuration;
 using Noobot.Core.DependencyResolution;
+using Serilog;
 using StanLeeSlackBot.Configuration;
 
 namespace StanLeeSlackBot
@@ -13,23 +14,20 @@ namespace StanLeeSlackBot
 		private INoobotCore _noobotCore;
 		private readonly IConfiguration _configuration;
 
-		private readonly ILog _log;
-
-		public NoobotHost(IConfigReader configReader, ILog log)
+		public NoobotHost(IConfigReader configReader)
 		{
 			_configReader = configReader;
 			_configuration = new ExampleConfiguration();
-			_log = log;
 		}
 
 		public void Start()
 		{
-			IContainerFactory containerFactory = new ContainerFactory(_configuration, _configReader, _log);
+			IContainerFactory containerFactory = new ContainerFactory(_configuration, _configReader);
 			INoobotContainer container = containerFactory.CreateContainer();
 			_noobotCore = container.GetNoobotCore();
 
 
-			_log.Trace("Connecting...");
+			Log.Information("Connecting...");
 			try
 			{
 				_noobotCore
@@ -39,7 +37,7 @@ namespace StanLeeSlackBot
 
 						if (!task.IsCompleted || task.IsFaulted)
 						{
-							_log.Debug($"Error connecting to Slack: {task.Exception}");
+							Log.Information($"Error connecting to Slack: {task.Exception}");
 						}
 					})
 					.GetAwaiter()
@@ -47,14 +45,14 @@ namespace StanLeeSlackBot
 			}
 			catch (Exception e)
 			{
-				_log.Error(e.Message);
+				Log.Information(e.Message);
 				throw;
 			}
 		}
 
 		public void Stop()
 		{
-			_log.Trace("Disconnecting...");
+			Log.Information("Disconnecting...");
 			_noobotCore?.Disconnect();
 		}
 	}

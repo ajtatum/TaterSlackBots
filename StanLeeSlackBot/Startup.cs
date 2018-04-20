@@ -1,61 +1,79 @@
-﻿using System;
-using System.IO;
-using Common.Logging;
-using Common.Logging.Configuration;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using StanLeeSlackBot.Configuration;
-using StanLeeSlackBot.Logging;
 
 namespace StanLeeSlackBot
 {
-    public class Startup
-    {
+	public class Startup
+	{
+		//public IConfiguration Configuration { get; }
+		public Startup(IConfiguration configuration)
+		{
+			Configuration = configuration;
+		}
+
 		public IConfiguration Configuration { get; }
+		//public Startup(IHostingEnvironment env)
+		//{
+		//var builder = new ConfigurationBuilder()
+		//	.SetBasePath(env.ContentRootPath)
+		//	.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+		//	.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+		//	.AddApplicationInsightsSettings()
+		//	.AddEnvironmentVariables();
 
-		public Startup(IHostingEnvironment env)
-        {
-            // Set up configuration sources.
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
-            
-            var logConfiguration = new LogConfiguration();
-            Configuration.GetSection("LogConfiguration").Bind(logConfiguration);
-            LogManager.Configure(logConfiguration);
-        }
+		//if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == EnvironmentName.Development)
+		//{
+		//	builder.AddUserSecrets<StanLeeSlackBot.Program>(false);
+		//}
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-			services.AddSingleton<IMemoryLog, MemoryLog>();
-	        services.AddSingleton<IConfiguration>(Configuration);
+		//Configuration = builder.Build();
+
+		//Log.Logger = new LoggerConfiguration()
+		//	.ReadFrom.Configuration(Configuration)
+		//	.Enrich.FromLogContext()
+		//	.Enrich.WithThreadId()
+		//	.Enrich.WithProcessName()
+		//	.Enrich.WithProcessId()
+		//	.Enrich.WithExceptionDetails()
+		//	.Enrich.With<AzureWebAppsNameEnricher>()
+		//	.Enrich.WithProperty("Application", "StanLeeSlackBot")
+		//	.WriteTo.Console()
+		//	.WriteTo.RollingFile(new CompactJsonFormatter(), "StanLeeLog-{Date}.txt", retainedFileCountLimit: 5)
+		//	.WriteTo.ApplicationInsightsEvents(new TelemetryClient())
+		//	.CreateLogger();
+		//}
+
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddOptions();
+			services.AddSingleton<IConfiguration>(Configuration);
+
+			services.AddApplicationInsightsTelemetry(Configuration);
 			services.AddDirectoryBrowser();
 		}
-        
-        public void Configure(IApplicationBuilder app, IApplicationLifetime applicationLifetime, IHostingEnvironment env, IMemoryLog log)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+
+		public void Configure(IApplicationBuilder app, IApplicationLifetime applicationLifetime, IHostingEnvironment env, IConfiguration configuration)
+		{
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
 
 			app.UseDirectoryBrowser("/data");
+			app.UseDirectoryBrowser("/Logs");
 
-			var noobHost = new NoobotHost(new ConfigReader(Configuration.GetSection("Bot")), log);
-            applicationLifetime.ApplicationStarted.Register(() => noobHost.Start());
-            applicationLifetime.ApplicationStopping.Register(noobHost.Stop);
+			var noobHost = new NoobotHost(new ConfigReader(configuration.GetSection("Bot")));
+			applicationLifetime.ApplicationStarted.Register(() => noobHost.Start());
+			applicationLifetime.ApplicationStopping.Register(noobHost.Stop);
 
 			app.Run(async context =>
-            {
-                await context.Response.WriteAsync(string.Join(Environment.NewLine, log.FullLog()));
-            });
-        }
-    }
+			{
+				await context.Response.WriteAsync("StanLeeSlackBot coming online.");
+			});
+		}
+	}
 }

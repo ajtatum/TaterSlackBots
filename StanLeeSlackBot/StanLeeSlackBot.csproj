@@ -3,15 +3,37 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>StanLeeSlackBot</AssemblyName>
     <Configurations>Development;Production</Configurations>
+    <ApplicationInsightsResourceId>/subscriptions/8cb1eed0-93cc-4583-9fd9-3545efef424d/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/StanLeeSlackBot</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/8cb1eed0-93cc-4583-9fd9-3545efef424d/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/StanLeeSlackBot</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Logging\**" />
+    <Content Remove="Logging\**" />
+    <EmbeddedResource Remove="Logging\**" />
+    <None Remove="Logging\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Collector.Serilog.Enrichers.AzureWebApps" Version="2.0.0" />
     <PackageReference Include="MarvelAPI" Version="0.1.2.2" />
-    <PackageReference Include="Microsoft.ApplicationInsights.Web" Version="2.5.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.2" />
     <PackageReference Include="Noobot.Core" Version="3.1.55" />
     <PackageReference Include="Noobot.Toolbox" Version="3.1.6" />
     <PackageReference Include="Common.Logging" Version="3.4.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
+    <PackageReference Include="Serilog.Enrichers.Context" Version="2.4.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.2" />
+    <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.0.0" />
+    <PackageReference Include="Serilog.Exceptions" Version="4.0.0" />
+    <PackageReference Include="Serilog.Formatting.Compact" Version="1.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="2.6.1" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="2.6.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="1.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
+    <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
@@ -20,5 +42,8 @@
     <None Update="appsettings.production.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 </Project>
