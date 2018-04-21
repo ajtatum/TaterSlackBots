@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Noobot.Core;
@@ -6,6 +7,7 @@ using Noobot.Core.Configuration;
 using Noobot.Core.DependencyResolution;
 using Serilog;
 using StanLeeSlackBot.Configuration;
+using ILogger = Serilog.ILogger;
 
 namespace StanLeeSlackBot
 {
@@ -15,14 +17,14 @@ namespace StanLeeSlackBot
 		private INoobotCore _noobotCore;
 		private readonly IConfiguration _configuration;
 
-		private readonly Serilog.ILogger _logger;
+		private readonly ILogger _log;
 
-		public NoobotHost(IConfigReader configReader, Serilog.ILogger logger)
+		public NoobotHost(IConfigReader configReader, ILogger logger)
 		{
 			_configReader = configReader;
 			_configuration = new ExampleConfiguration();
 
-			_logger = logger;
+			_log = logger;
 		}
 
 		public void Start()
@@ -31,18 +33,16 @@ namespace StanLeeSlackBot
 			INoobotContainer container = containerFactory.CreateContainer();
 			_noobotCore = container.GetNoobotCore();
 
-
-			Log.Information("Connecting...");
+			_log.Information("Connecting...");
 			try
 			{
 				_noobotCore
 					.Connect()
 					.ContinueWith(task =>
 					{
-
 						if (!task.IsCompleted || task.IsFaulted)
 						{
-							Log.Information($"Error connecting to Slack: {task.Exception}");
+							_log.Information($"Error connecting to Slack: {task.Exception}. {(task.Exception.InnerExceptions.Any() ? string.Join(". ", task.Exception.InnerExceptions.Select(x=>x.Message)) : string.Empty) }");
 						}
 					})
 					.GetAwaiter()
@@ -59,7 +59,7 @@ namespace StanLeeSlackBot
 
 		public void Stop()
 		{
-			Log.Information("Disconnecting...");
+			_log.Information("Disconnecting...");
 			_noobotCore?.Disconnect();
 		}
 	}

@@ -37,75 +37,67 @@ namespace StanLeeSlackBot
 			}
 		}
 
-		public static void Main(string[] args)
+		public static int Main(string[] args)
 		{
+			var appInsight = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
 
+			Log.Logger = new LoggerConfiguration()
+				.MinimumLevel.Information()
+				.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+				.MinimumLevel.Override("System", LogEventLevel.Information)
+				.Enrich.FromLogContext()
+				.Enrich.WithThreadId()
+				.Enrich.WithProcessName()
+				.Enrich.WithProcessId()
+				.Enrich.WithExceptionDetails()
+				.Enrich.WithHttpContextData()
+				.Enrich.With<AzureWebAppsNameEnricher>()
+				.Enrich.WithProperty("Application", "StanLeeSlackBot")
+				.WriteTo.Console()
+				.WriteTo.ApplicationInsightsEvents(appInsight)
+				//.WriteTo.RollingFile(
+				//	new CompactJsonFormatter(), 
+				//	basedir + "/Logs/StanLeeLog-{Date}.txt", 
+				//	retainedFileCountLimit: 5)
+				.WriteTo.File(
+					@"D:\home\LogFiles\Application\StanLeeLog-{Date}.txt",
+					fileSizeLimitBytes: 1_000_000,
+					rollOnFileSizeLimit: true,
+					shared: true,
+					rollingInterval: RollingInterval.Day,
+					flushToDiskInterval: TimeSpan.FromSeconds(1))
+				.CreateLogger();
 
-			//Log.Logger = new LoggerConfiguration()
-			//	.MinimumLevel.Verbose()
-			//	.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-			//	.MinimumLevel.Override("System", LogEventLevel.Information)
-			//	.Enrich.FromLogContext()
-			//	.Enrich.WithThreadId()
-			//	.Enrich.WithProcessName()
-			//	.Enrich.WithProcessId()
-			//	.Enrich.WithExceptionDetails()
-			//	.Enrich.With<AzureWebAppsNameEnricher>()
-			//	.Enrich.WithProperty("Application", "StanLeeSlackBot")
-			//	.WriteTo.Console()
-			//	//.WriteTo.RollingFile(
-			//	//	new CompactJsonFormatter(), 
-			//	//	basedir + "/Logs/StanLeeLog-{Date}.txt", 
-			//	//	retainedFileCountLimit: 5)
-			//	.WriteTo.File(
-			//		@"D:\home\LogFiles\Application\StanLeeLog.txt",
-			//		fileSizeLimitBytes: 1_000_000,
-			//		rollOnFileSizeLimit: true,
-			//		shared: true,
-			//		flushToDiskInterval: TimeSpan.FromSeconds(1))
-			//	.WriteTo.ApplicationInsightsEvents(telemetryConfiguration)
-			//	.CreateLogger();
+			var builder = new ContainerBuilder();
+			builder.RegisterLogger();
 
-			BuildWebHost(args).Run();
+			try
+			{
+				Log.Information("Starting web host");
+				BuildWebHost(args).Run();
+				return 0;
+			}
+			catch (Exception ex)
+			{
+				Log.Fatal(ex, "Host terminated unexpectedly");
+				return 1;
+			}
+			finally
+			{
+				Log.CloseAndFlush();
+			}
 		}
 
 		public static IWebHost BuildWebHost(string[] args)
 		{
-			//string basedir = AppDomain.CurrentDomain.BaseDirectory;
 			var appInsight = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
 
 			return WebHost.CreateDefaultBuilder(args)
 				.UseConfiguration(Configuration)
 				.UseStartup<Startup>()
+				.UseSerilog()
 				.UseApplicationInsights(appInsight)
 				.UseAzureAppServices()
-				.UseSerilog((hostingContext, loggerConfiguration) =>
-					loggerConfiguration
-						.MinimumLevel.Information()
-						.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-						.MinimumLevel.Override("System", LogEventLevel.Information)
-						.Enrich.FromLogContext()
-						.Enrich.WithThreadId()
-						.Enrich.WithProcessName()
-						.Enrich.WithProcessId()
-						.Enrich.WithExceptionDetails()
-						.Enrich.WithHttpContextData()
-						.Enrich.With<AzureWebAppsNameEnricher>()
-						.Enrich.WithProperty("Application", "StanLeeSlackBot")
-						.WriteTo.Console()
-						.WriteTo.ApplicationInsightsEvents(appInsight)
-						//.WriteTo.RollingFile(
-						//	new CompactJsonFormatter(), 
-						//	basedir + "/Logs/StanLeeLog-{Date}.txt", 
-						//	retainedFileCountLimit: 5)
-						.WriteTo.File(
-							@"D:\home\LogFiles\Application\StanLeeLog-{Date}.txt",
-							fileSizeLimitBytes: 1_000_000,
-							rollOnFileSizeLimit: true,
-							shared: true,
-							rollingInterval: RollingInterval.Day,
-							flushToDiskInterval: TimeSpan.FromSeconds(1))
-				)
 				.Build();
 		}
 	}
