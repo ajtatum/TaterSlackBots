@@ -4,6 +4,8 @@
     <AssemblyName>StanLeeSlackBot</AssemblyName>
     <Configurations>Development;Production</Configurations>
     <UserSecretsId>dedbd059-92d5-4173-a096-ea775e5a2a57</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/8cb1eed0-93cc-4583-9fd9-3545efef424d/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/StanLeeSlackBot</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/8cb1eed0-93cc-4583-9fd9-3545efef424d/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/StanLeeSlackBot</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Logging\**" />
@@ -12,6 +14,8 @@
     <None Remove="Logging\**" />
   </ItemGroup>
     <ItemGroup>
+    <PackageReference Include="Collector.Serilog.Enrichers.AzureWebApps" Version="2.0.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
   </ItemGroup>
   <ItemGroup>
@@ -28,11 +32,13 @@
     <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Serilog.Enrichers.Context" Version="2.4.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.2" />
+    <PackageReference Include="Serilog.Enrichers.HttpContextData" Version="0.1.2" />
     <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.1" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.0.0" />
     <PackageReference Include="Serilog.Exceptions" Version="4.0.0" />
     <PackageReference Include="Serilog.Formatting.Compact" Version="1.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="2.6.1" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="2.6.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
@@ -40,5 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 </Project>

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Serilog.Enrichers.AzureWebApps;
+using Serilog.Enrichers.HttpContextData;
 using Serilog.Events;
 using Serilog.Exceptions;
 
@@ -79,7 +81,7 @@ namespace StanLeeSlackBot
 				.UseAzureAppServices()
 				.UseSerilog((hostingContext, loggerConfiguration) =>
 					loggerConfiguration
-						.MinimumLevel.Verbose()
+						.MinimumLevel.Information()
 						.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
 						.MinimumLevel.Override("System", LogEventLevel.Information)
 						.Enrich.FromLogContext()
@@ -87,8 +89,11 @@ namespace StanLeeSlackBot
 						.Enrich.WithProcessName()
 						.Enrich.WithProcessId()
 						.Enrich.WithExceptionDetails()
+						.Enrich.WithHttpContextData()
+						.Enrich.With<AzureWebAppsNameEnricher>()
 						.Enrich.WithProperty("Application", "StanLeeSlackBot")
 						.WriteTo.Console()
+						.WriteTo.ApplicationInsightsEvents(appInsight)
 						//.WriteTo.RollingFile(
 						//	new CompactJsonFormatter(), 
 						//	basedir + "/Logs/StanLeeLog-{Date}.txt", 

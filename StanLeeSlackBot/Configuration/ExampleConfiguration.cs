@@ -9,18 +9,18 @@ namespace StanLeeSlackBot.Configuration
     {
         public ExampleConfiguration()
         {
-			//UseMiddleware<WelcomeMiddleware>();
-	       // UseMiddleware<AdminMiddleware>();
-	        //UseMiddleware<ScheduleMiddleware>();
-	       // UseMiddleware<JokeMiddleware>();
-	        //UseMiddleware<YieldTestMiddleware>();
-	        //UseMiddleware<PingMiddleware>();
+			UseMiddleware<WelcomeMiddleware>();
+			UseMiddleware<AdminMiddleware>();
+			UseMiddleware<ScheduleMiddleware>();
+			UseMiddleware<JokeMiddleware>();
+			UseMiddleware<YieldTestMiddleware>();
+			UseMiddleware<PingMiddleware>();
 			UseMiddleware<MarvelMiddleware>();
 
-	        //UsePlugin<JsonStoragePlugin>();
-	        //UsePlugin<SchedulePlugin>();
-	        //UsePlugin<AdminPlugin>();
-	        //UsePlugin<PingPlugin>();
+			UsePlugin<JsonStoragePlugin>();
+			UsePlugin<SchedulePlugin>();
+			UsePlugin<AdminPlugin>();
+			UsePlugin<PingPlugin>();
 		}
     }
 }
