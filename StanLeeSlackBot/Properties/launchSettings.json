@@ -8,20 +8,12 @@
     }
   },
   "profiles": {
-    "IIS Express": {
+    "StanLeeSlackBot": {
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    },
-    "Noobot.Examples.Dotnet": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:65118/"
     }
   }
 }

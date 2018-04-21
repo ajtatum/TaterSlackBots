@@ -1,6 +1,10 @@
 ﻿using System;
 using System.IO;
+using Autofac;
+using AutofacSerilogIntegration;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Enrichers.AzureWebApps;
+using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Formatting.Compact;
 
@@ -36,53 +41,79 @@ namespace StanLeeSlackBot
 			}
 		}
 
-		public static int Main(string[] args)
+		public static void Main(string[] args)
 		{
-			string basedir = AppDomain.CurrentDomain.BaseDirectory;
 
-			Log.Logger = new LoggerConfiguration()
-				.ReadFrom.Configuration(Configuration)
-				.Enrich.FromLogContext()
-				.Enrich.WithThreadId()
-				.Enrich.WithProcessName()
-				.Enrich.WithProcessId()
-				.Enrich.WithExceptionDetails()
-				.Enrich.With<AzureWebAppsNameEnricher>()
-				.Enrich.WithProperty("Application", "StanLeeSlackBot")
-				.WriteTo.Console()
-				.WriteTo.RollingFile(new CompactJsonFormatter(), basedir + "/Logs/StanLeeLog-{Date}.txt", retainedFileCountLimit: 5)
-				.WriteTo.ApplicationInsightsEvents(new TelemetryClient())
-				.CreateLogger();
 
-			try
-			{
-				Log.Information("Getting the motors running...");
+			//Log.Logger = new LoggerConfiguration()
+			//	.MinimumLevel.Verbose()
+			//	.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+			//	.MinimumLevel.Override("System", LogEventLevel.Information)
+			//	.Enrich.FromLogContext()
+			//	.Enrich.WithThreadId()
+			//	.Enrich.WithProcessName()
+			//	.Enrich.WithProcessId()
+			//	.Enrich.WithExceptionDetails()
+			//	.Enrich.With<AzureWebAppsNameEnricher>()
+			//	.Enrich.WithProperty("Application", "StanLeeSlackBot")
+			//	.WriteTo.Console()
+			//	//.WriteTo.RollingFile(
+			//	//	new CompactJsonFormatter(), 
+			//	//	basedir + "/Logs/StanLeeLog-{Date}.txt", 
+			//	//	retainedFileCountLimit: 5)
+			//	.WriteTo.File(
+			//		@"D:\home\LogFiles\Application\StanLeeLog.txt",
+			//		fileSizeLimitBytes: 1_000_000,
+			//		rollOnFileSizeLimit: true,
+			//		shared: true,
+			//		flushToDiskInterval: TimeSpan.FromSeconds(1))
+			//	.WriteTo.ApplicationInsightsEvents(telemetryConfiguration)
+			//	.CreateLogger();
 
-				BuildWebHost(args).Run();
-
-				return 0;
-			}
-			catch (Exception ex)
-			{
-				Log.Fatal(ex, "Host terminated unexpectedly");
-				return 1;
-			}
-			finally
-			{
-				Log.CloseAndFlush();
-			}
+			BuildWebHost(args).Run();
 		}
 
-		public static IWebHost BuildWebHost(string[] args) =>
-			WebHost.CreateDefaultBuilder(args)
-				.ConfigureLogging(builder =>
-				{
-					builder.ClearProviders();
-				})
+		public static IWebHost BuildWebHost(string[] args)
+		{
+			//string basedir = AppDomain.CurrentDomain.BaseDirectory;
+			var appInsight = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
+
+			return WebHost.CreateDefaultBuilder(args)
 				.UseConfiguration(Configuration)
 				.UseStartup<Startup>()
-				.UseApplicationInsights()
-				.UseSerilog()
+				.UseApplicationInsights(appInsight)
+				.UseAzureAppServices()
+				.UseSerilog((hostingContext, loggerConfiguration) =>
+				{
+					var logger = loggerConfiguration
+						.MinimumLevel.Verbose()
+						.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+						.MinimumLevel.Override("System", LogEventLevel.Information)
+						.Enrich.FromLogContext()
+						.Enrich.WithThreadId()
+						.Enrich.WithProcessName()
+						.Enrich.WithProcessId()
+						.Enrich.WithExceptionDetails()
+						.Enrich.With<AzureWebAppsNameEnricher>()
+						.Enrich.WithProperty("Application", "StanLeeSlackBot")
+						.WriteTo.Console()
+						//.WriteTo.RollingFile(
+						//	new CompactJsonFormatter(), 
+						//	basedir + "/Logs/StanLeeLog-{Date}.txt", 
+						//	retainedFileCountLimit: 5)
+						.WriteTo.File(
+							@"D:\home\LogFiles\Application\StanLeeLog.txt",
+							fileSizeLimitBytes: 1_000_000,
+							rollOnFileSizeLimit: true,
+							shared: true,
+							flushToDiskInterval: TimeSpan.FromSeconds(1))
+						.WriteTo.ApplicationInsightsEvents(appInsight)
+						.CreateLogger();
+
+					var builder = new ContainerBuilder();
+					builder.RegisterLogger(logger);
+				})
 				.Build();
+		}
 	}
 }

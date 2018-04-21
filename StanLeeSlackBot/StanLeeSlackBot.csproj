@@ -5,6 +5,7 @@
     <Configurations>Development;Production</Configurations>
     <ApplicationInsightsResourceId>/subscriptions/8cb1eed0-93cc-4583-9fd9-3545efef424d/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/StanLeeSlackBot</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/8cb1eed0-93cc-4583-9fd9-3545efef424d/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/StanLeeSlackBot</ApplicationInsightsAnnotationResourceId>
+    <StartupObject>StanLeeSlackBot.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Logging\**" />
@@ -13,8 +14,9 @@
     <None Remove="Logging\**" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.8.0" />
+    <PackageReference Include="AutofacSerilogIntegration" Version="2.0.0" />
     <PackageReference Include="Collector.Serilog.Enrichers.AzureWebApps" Version="2.0.0" />
-    <PackageReference Include="MarvelAPI" Version="0.1.2.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.2" />

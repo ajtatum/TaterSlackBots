@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Core;
 using StanLeeSlackBot.Configuration;
 
 namespace StanLeeSlackBot
@@ -49,14 +52,14 @@ namespace StanLeeSlackBot
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddOptions();
-			services.AddSingleton<IConfiguration>(Configuration);
+			//services.AddOptions();
+			//services.AddSingleton<IConfiguration>(Configuration);
 
-			services.AddApplicationInsightsTelemetry(Configuration);
+			//services.AddApplicationInsightsTelemetry(Configuration);
 			services.AddDirectoryBrowser();
 		}
 
-		public void Configure(IApplicationBuilder app, IApplicationLifetime applicationLifetime, IHostingEnvironment env, IConfiguration configuration)
+		public void Configure(IApplicationBuilder app, IApplicationLifetime applicationLifetime, IHostingEnvironment env)
 		{
 			if (env.IsDevelopment())
 			{
@@ -66,7 +69,7 @@ namespace StanLeeSlackBot
 			app.UseDirectoryBrowser("/data");
 			app.UseDirectoryBrowser("/Logs");
 
-			var noobHost = new NoobotHost(new ConfigReader(configuration.GetSection("Bot")));
+			var noobHost = new NoobotHost(new ConfigReader(Configuration.GetSection("Bot")), Log.ForContext<NoobotHost>());
 			applicationLifetime.ApplicationStarted.Register(() => noobHost.Start());
 			applicationLifetime.ApplicationStopping.Register(noobHost.Stop);
 
