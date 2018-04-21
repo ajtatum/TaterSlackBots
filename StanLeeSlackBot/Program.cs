@@ -2,19 +2,13 @@
 using System.IO;
 using Autofac;
 using AutofacSerilogIntegration;
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Enrichers.AzureWebApps;
 using Serilog.Events;
 using Serilog.Exceptions;
-using Serilog.Formatting.Compact;
 
 namespace StanLeeSlackBot
 {
@@ -84,8 +78,7 @@ namespace StanLeeSlackBot
 				.UseApplicationInsights(appInsight)
 				.UseAzureAppServices()
 				.UseSerilog((hostingContext, loggerConfiguration) =>
-				{
-					var logger = loggerConfiguration
+					loggerConfiguration
 						.MinimumLevel.Verbose()
 						.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
 						.MinimumLevel.Override("System", LogEventLevel.Information)
@@ -94,7 +87,6 @@ namespace StanLeeSlackBot
 						.Enrich.WithProcessName()
 						.Enrich.WithProcessId()
 						.Enrich.WithExceptionDetails()
-						.Enrich.With<AzureWebAppsNameEnricher>()
 						.Enrich.WithProperty("Application", "StanLeeSlackBot")
 						.WriteTo.Console()
 						//.WriteTo.RollingFile(
@@ -102,17 +94,13 @@ namespace StanLeeSlackBot
 						//	basedir + "/Logs/StanLeeLog-{Date}.txt", 
 						//	retainedFileCountLimit: 5)
 						.WriteTo.File(
-							@"D:\home\LogFiles\Application\StanLeeLog.txt",
+							@"D:\home\LogFiles\Application\StanLeeLog-{Date}.txt",
 							fileSizeLimitBytes: 1_000_000,
 							rollOnFileSizeLimit: true,
 							shared: true,
+							rollingInterval: RollingInterval.Day,
 							flushToDiskInterval: TimeSpan.FromSeconds(1))
-						.WriteTo.ApplicationInsightsEvents(appInsight)
-						.CreateLogger();
-
-					var builder = new ContainerBuilder();
-					builder.RegisterLogger(logger);
-				})
+				)
 				.Build();
 		}
 	}

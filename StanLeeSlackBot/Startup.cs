@@ -56,6 +56,7 @@ namespace StanLeeSlackBot
 			//services.AddSingleton<IConfiguration>(Configuration);
 
 			//services.AddApplicationInsightsTelemetry(Configuration);
+			services.AddMvc();
 			services.AddDirectoryBrowser();
 		}
 
@@ -72,6 +73,8 @@ namespace StanLeeSlackBot
 			var noobHost = new NoobotHost(new ConfigReader(Configuration.GetSection("Bot")), Log.ForContext<NoobotHost>());
 			applicationLifetime.ApplicationStarted.Register(() => noobHost.Start());
 			applicationLifetime.ApplicationStopping.Register(noobHost.Stop);
+			
+			app.UseMvc();
 
 			app.Run(async context =>
 			{
