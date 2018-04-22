@@ -4,6 +4,6 @@ namespace StanLeeSlackBot.Bots
 {
 	public interface IStanLeeBot
 	{
-		Task GoStanLee();
+		Task Start();
 	}
 }

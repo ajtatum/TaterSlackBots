@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using AutofacSerilogIntegration;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -49,6 +50,15 @@ namespace StanLeeSlackBot
 			builder.RegisterModule(new AutofacModule());
 		}
 
+		//private static void HandleStanLeeBot(IApplicationBuilder app, IStanLeeBot stanLeeBot)
+		//{
+		//	app.Run(async context =>
+		//	{
+		//		await stanLeeBot.Start();
+		//		await context.Response.WriteAsync("StanLeeSlackBot coming online.");
+		//	});
+		//}
+
 		public void Configure(IApplicationBuilder app, IApplicationLifetime applicationLifetime, IHostingEnvironment env, IStanLeeBot stanLeeBot)
 		{
 			if (env.IsDevelopment())
@@ -58,10 +68,11 @@ namespace StanLeeSlackBot
 
 			app.UseMiddleware<SerilogMiddleware>();
 
+			//app.Map("/stanlee", c => HandleStanLeeBot(app, stanLeeBot));
+
 			app.Run(async context =>
 			{
-				await stanLeeBot.GoStanLee();
-				await context.Response.WriteAsync("StanLeeSlackBot coming online.");
+				await context.Response.WriteAsync("Whatcha looking for?");
 			});
 		}
 	}

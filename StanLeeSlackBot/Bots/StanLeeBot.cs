@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -25,7 +26,7 @@ namespace StanLeeSlackBot.Bots
 			_marvelService = marvelService;
 		}
 
-		public async Task GoStanLee()
+		public async Task Start()
 		{
 			_log.Information("StanLee getting connected!");
 
@@ -37,14 +38,14 @@ namespace StanLeeSlackBot.Bots
 				});
 
 			bot.When(MatchFactory.Matches.Text("hello"), async conv =>
-			{
-				await conv.PostMessage("Hi!");
-			})
-			.OnException((msg, ex) =>
-			{
-				_log.Error(ex, "Stan Lee had an error! It's {exception}");
-			});
-			
+				{
+					await conv.PostMessage("Hi!");
+				})
+				.OnException((msg, ex) =>
+				{
+					_log.Error(ex, "Stan Lee had an error! It's {exception}");
+				});
+
 			bot.When(MatchFactory.Matches.Text("whois"), async conv =>
 				{
 					const string toBeSearched = "whois";
@@ -77,5 +78,5 @@ namespace StanLeeSlackBot.Bots
 					_log.Error(ex, "Stan Lee had an error! It's {exception}");
 				});
 		}
-    }
+	}
 }

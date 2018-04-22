@@ -1,9 +1,7 @@
 ﻿using Autofac;
 using AutofacSerilogIntegration;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Serilog;
 using StanLeeSlackBot.Bots;
 using StanLeeSlackBot.Classes;
 using StanLeeSlackBot.Services;
@@ -28,7 +26,8 @@ namespace StanLeeSlackBot
 						c.Resolve<Serilog.ILogger>(),
 						c.Resolve<IMarvelService>()))
 				.As<IStanLeeBot>()
-				.SingleInstance();
+				.SingleInstance()
+				.OnActivating(async args => await args.Instance.Start());
 		}
 	}
 }
