@@ -1,19 +1,12 @@
 ﻿using Autofac;
-using AutofacSerilogIntegration;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Serilog;
-using SlackBotNet;
 using StanLeeSlackBot.Bots;
 using StanLeeSlackBot.Classes;
 using StanLeeSlackBot.Middleware;
-using StanLeeSlackBot.Services;
 
 namespace StanLeeSlackBot
 {
@@ -50,15 +43,6 @@ namespace StanLeeSlackBot
 			builder.RegisterModule(new AutofacModule());
 		}
 
-		//private static void HandleStanLeeBot(IApplicationBuilder app, IStanLeeBot stanLeeBot)
-		//{
-		//	app.Run(async context =>
-		//	{
-		//		await stanLeeBot.Start();
-		//		await context.Response.WriteAsync("StanLeeSlackBot coming online.");
-		//	});
-		//}
-
 		public void Configure(IApplicationBuilder app, IApplicationLifetime applicationLifetime, IHostingEnvironment env, IStanLeeBot stanLeeBot)
 		{
 			if (env.IsDevelopment())
@@ -67,8 +51,6 @@ namespace StanLeeSlackBot
 			}
 
 			app.UseMiddleware<SerilogMiddleware>();
-
-			//app.Map("/stanlee", c => HandleStanLeeBot(app, stanLeeBot));
 
 			app.Run(async context =>
 			{

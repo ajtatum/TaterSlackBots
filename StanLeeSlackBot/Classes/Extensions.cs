@@ -27,8 +27,8 @@ namespace StanLeeSlackBot.Classes
 		    }
 
 		    // Count end punctuation.
-		    int removeFromEnd = 0;
-		    for (int i = value.Length - 1; i >= 0; i--)
+		    var removeFromEnd = 0;
+		    for (var i = value.Length - 1; i >= 0; i--)
 		    {
 			    if (char.IsPunctuation(value[i]))
 			    {
@@ -58,9 +58,9 @@ namespace StanLeeSlackBot.Classes
 
 	    public static string ToCleanMessage(this string value)
 	    {
-		    char[] arr = value.ToCharArray();
+		    var arr = value.ToCharArray();
 
-		    char[] allowedCharacters = new[] {'-', '\''};
+		    var allowedCharacters = new[] {'-', '\''};
 
 
 			arr = Array.FindAll<char>(arr, (c => (char.IsLetterOrDigit(c)
