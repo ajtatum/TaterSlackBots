@@ -17,6 +17,7 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.2" />
     <PackageReference Include="Collector.Serilog.Enrichers.AzureWebApps" Version="2.0.0" />
     <PackageReference Include="Common.Logging.Serilog" Version="4.3.6" />
+    <PackageReference Include="MarvelSharp" Version="1.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
   </ItemGroup>
@@ -44,9 +45,6 @@
     <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="SlackBotNet" Version="0.8.8" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Bots\" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services" />

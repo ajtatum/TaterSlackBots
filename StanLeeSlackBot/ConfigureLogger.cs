@@ -10,7 +10,7 @@ namespace StanLeeSlackBot
 {
     public class ConfigureLogger
     {
-	    public static Logger CreateLogger(string appInsight)
+	    public static Logger CreateLogger()
 	    {
 		    var seriLogger = new LoggerConfiguration()
 			    .MinimumLevel.Information()
@@ -27,8 +27,6 @@ namespace StanLeeSlackBot
 				    {
 					    a.Console();
 
-					    a.ApplicationInsightsEvents(appInsight);
-
 						a.File(
 						    new CompactJsonFormatter(),
 						    @"D:\home\LogFiles\Application\StanLeeLog.txt",
@@ -41,7 +39,6 @@ namespace StanLeeSlackBot
 				    bufferSize: 500)
 			    .CreateLogger();
 
-		    Log.Logger = seriLogger;
 		    return seriLogger;
 	    }
     }

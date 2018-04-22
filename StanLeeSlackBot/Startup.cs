@@ -5,9 +5,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Serilog;
+using SlackBotNet;
+using StanLeeSlackBot.Bots;
 using StanLeeSlackBot.Classes;
 using StanLeeSlackBot.Middleware;
+using StanLeeSlackBot.Services;
 
 namespace StanLeeSlackBot
 {
@@ -27,31 +32,24 @@ namespace StanLeeSlackBot
 				builder.AddUserSecrets<Program>(false);
 			}
 
-			this.Configuration = builder.Build();
+			Configuration = builder.Build();
 		}
 
 		public IConfigurationRoot Configuration { get; private set; }
 
-		public ILogger Logger { get; private set; }
-
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddOptions();
-			services.AddMvc();
-			services.AddDirectoryBrowser();
 			services.AddSingleton(Configuration);
 			services.Configure<AppSettings>(Configuration);
 		}
 
 		public void ConfigureContainer(ContainerBuilder builder)
 		{
-			var appInsight = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
-			Logger = ConfigureLogger.CreateLogger(appInsight);
-
-			builder.RegisterLogger(autowireProperties: true, logger: Logger);
+			builder.RegisterModule(new AutofacModule());
 		}
 
-		public void Configure(IApplicationBuilder app, IApplicationLifetime applicationLifetime, IHostingEnvironment env)
+		public void Configure(IApplicationBuilder app, IApplicationLifetime applicationLifetime, IHostingEnvironment env, IStanLeeBot stanLeeBot)
 		{
 			if (env.IsDevelopment())
 			{
@@ -60,10 +58,9 @@ namespace StanLeeSlackBot
 
 			app.UseMiddleware<SerilogMiddleware>();
 
-			app.UseMvc();
-
 			app.Run(async context =>
 			{
+				await stanLeeBot.GoStanLee();
 				await context.Response.WriteAsync("StanLeeSlackBot coming online.");
 			});
 		}

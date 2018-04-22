@@ -8,6 +8,7 @@
 		public Slack Slack { get; set; }
 		public ApplicationInsights ApplicationInsights { get; set; }
 	}
+
 	public class Marvel
 	{
 		public string PublicKey { get; set; }

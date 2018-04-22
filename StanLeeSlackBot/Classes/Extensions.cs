@@ -1,4 +1,9 @@
-﻿namespace StanLeeSlackBot.Classes
+﻿using System;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace StanLeeSlackBot.Classes
 {
     public static class Extensions
     {
@@ -49,6 +54,33 @@
 		    // Substring.
 		    return value.Substring(removeFromStart,
 			    value.Length - removeFromEnd - removeFromStart);
+	    }
+
+	    public static string ToCleanMessage(this string value)
+	    {
+		    char[] arr = value.ToCharArray();
+
+		    char[] allowedCharacters = new[] {'-', '\''};
+
+
+			arr = Array.FindAll<char>(arr, (c => (char.IsLetterOrDigit(c)
+		                                          || char.IsWhiteSpace(c)
+		                                          || allowedCharacters.Contains(c))));
+		    return new string(arr);
+		}
+
+	    public static string StripAscii(this string value)
+	    {
+			return Regex.Replace(value, @"[^\u0000-\u007F]+", string.Empty);
+		}
+
+		public static string LatinToAscii(this string value)
+	    {
+		    var newStringBuilder = new StringBuilder();
+		    newStringBuilder.Append(value.Normalize(NormalizationForm.FormKD)
+			    .Where(x => x < 128)
+			    .ToArray());
+		    return newStringBuilder.ToString();
 	    }
 	}
 }
