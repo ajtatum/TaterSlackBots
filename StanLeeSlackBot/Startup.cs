@@ -1,63 +1,54 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Autofac;
+using AutofacSerilogIntegration;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Core;
-using StanLeeSlackBot.Configuration;
+using StanLeeSlackBot.Classes;
+using StanLeeSlackBot.Middleware;
 
 namespace StanLeeSlackBot
 {
 	public class Startup
 	{
-		//public IConfiguration Configuration { get; }
-		public Startup(IConfiguration configuration)
+		public Startup(IHostingEnvironment env)
 		{
-			Configuration = configuration;
+			var builder = new ConfigurationBuilder()
+				.SetBasePath(env.ContentRootPath)
+				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+				.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+				.AddApplicationInsightsSettings()
+				.AddEnvironmentVariables();
+
+			if (env.IsDevelopment())
+			{
+				builder.AddUserSecrets<Program>(false);
+			}
+
+			this.Configuration = builder.Build();
 		}
 
-		public IConfiguration Configuration { get; }
-		//public Startup(IHostingEnvironment env)
-		//{
-		//var builder = new ConfigurationBuilder()
-		//	.SetBasePath(env.ContentRootPath)
-		//	.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-		//	.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-		//	.AddApplicationInsightsSettings()
-		//	.AddEnvironmentVariables();
+		public IConfigurationRoot Configuration { get; private set; }
 
-		//if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == EnvironmentName.Development)
-		//{
-		//	builder.AddUserSecrets<StanLeeSlackBot.Program>(false);
-		//}
-
-		//Configuration = builder.Build();
-
-		//Log.Logger = new LoggerConfiguration()
-		//	.ReadFrom.Configuration(Configuration)
-		//	.Enrich.FromLogContext()
-		//	.Enrich.WithThreadId()
-		//	.Enrich.WithProcessName()
-		//	.Enrich.WithProcessId()
-		//	.Enrich.WithExceptionDetails()
-		//	.Enrich.With<AzureWebAppsNameEnricher>()
-		//	.Enrich.WithProperty("Application", "StanLeeSlackBot")
-		//	.WriteTo.Console()
-		//	.WriteTo.RollingFile(new CompactJsonFormatter(), "StanLeeLog-{Date}.txt", retainedFileCountLimit: 5)
-		//	.WriteTo.ApplicationInsightsEvents(new TelemetryClient())
-		//	.CreateLogger();
-		//}
+		public ILogger Logger { get; private set; }
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			//services.AddOptions();
-			//services.AddSingleton<IConfiguration>(Configuration);
-
-			//services.AddApplicationInsightsTelemetry(Configuration);
+			services.AddOptions();
 			services.AddMvc();
 			services.AddDirectoryBrowser();
+			services.AddSingleton(Configuration);
+			services.Configure<AppSettings>(Configuration);
+		}
+
+		public void ConfigureContainer(ContainerBuilder builder)
+		{
+			var appInsight = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
+			Logger = ConfigureLogger.CreateLogger(appInsight);
+
+			builder.RegisterLogger(autowireProperties: true, logger: Logger);
 		}
 
 		public void Configure(IApplicationBuilder app, IApplicationLifetime applicationLifetime, IHostingEnvironment env)
@@ -67,13 +58,8 @@ namespace StanLeeSlackBot
 				app.UseDeveloperExceptionPage();
 			}
 
-			app.UseDirectoryBrowser("/data");
-			app.UseDirectoryBrowser("/Logs");
+			app.UseMiddleware<SerilogMiddleware>();
 
-			var noobHost = new NoobotHost(new ConfigReader(Configuration.GetSection("Bot")), Log.ForContext<NoobotHost>());
-			applicationLifetime.ApplicationStarted.Register(() => noobHost.Start());
-			applicationLifetime.ApplicationStopping.Register(noobHost.Stop);
-			
 			app.UseMvc();
 
 			app.Run(async context =>
