@@ -44,7 +44,7 @@ namespace StanLeeSlackBot.Bots
 			{
 				_log.Error(ex, "Stan Lee had an error! It's {exception}");
 			});
-
+			
 			bot.When(MatchFactory.Matches.Text("whois"), async conv =>
 				{
 					const string toBeSearched = "whois";

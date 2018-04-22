@@ -17,7 +17,7 @@ namespace StanLeeSlackBot
 			base.Load(builder);
 
 			builder.RegisterLogger();
-
+			
 			builder.Register(c => new MarvelService(c.Resolve<IOptions<AppSettings>>(), c.Resolve<Serilog.ILogger>()))
 				.As<IMarvelService>()
 				.InstancePerLifetimeScope();

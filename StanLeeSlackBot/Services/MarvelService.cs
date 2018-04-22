@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using MarvelSharp;
 using MarvelSharp.Criteria;
 using MarvelSharp.Model;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
 using StanLeeSlackBot.Classes;
