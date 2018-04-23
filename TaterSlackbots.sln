@@ -3,24 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StanLeeSlackBot", "StanLeeSlackBot\StanLeeSlackBot.csproj", "{BB928863-454A-4538-B6ED-64C727D8F116}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SB.StanLee", "SB.StanLee\SB.StanLee.csproj", "{0CDD2E7F-4805-4B00-A9CA-92D4FBC0C664}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Development|Any CPU = Development|Any CPU
-		Production|Any CPU = Production|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BB928863-454A-4538-B6ED-64C727D8F116}.Development|Any CPU.ActiveCfg = Development|Any CPU
-		{BB928863-454A-4538-B6ED-64C727D8F116}.Development|Any CPU.Build.0 = Development|Any CPU
-		{BB928863-454A-4538-B6ED-64C727D8F116}.Production|Any CPU.ActiveCfg = Production|Any CPU
-		{BB928863-454A-4538-B6ED-64C727D8F116}.Production|Any CPU.Build.0 = Production|Any CPU
-		{0CDD2E7F-4805-4B00-A9CA-92D4FBC0C664}.Development|Any CPU.ActiveCfg = Development|Any CPU
-		{0CDD2E7F-4805-4B00-A9CA-92D4FBC0C664}.Development|Any CPU.Build.0 = Development|Any CPU
-		{0CDD2E7F-4805-4B00-A9CA-92D4FBC0C664}.Production|Any CPU.ActiveCfg = Production|Any CPU
-		{0CDD2E7F-4805-4B00-A9CA-92D4FBC0C664}.Production|Any CPU.Build.0 = Production|Any CPU
+		{0CDD2E7F-4805-4B00-A9CA-92D4FBC0C664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CDD2E7F-4805-4B00-A9CA-92D4FBC0C664}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CDD2E7F-4805-4B00-A9CA-92D4FBC0C664}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CDD2E7F-4805-4B00-A9CA-92D4FBC0C664}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

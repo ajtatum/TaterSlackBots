@@ -3,27 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <Configurations>Development;Production</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Classes\SlackBotWebHostService.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="appsettings.json" />
-    <None Remove="appsettings.Production.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="appsettings.Production.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.8.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.2" />
@@ -47,6 +28,17 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
     <PackageReference Include="SlackBotNet" Version="0.8.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.Debug.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.Release.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
