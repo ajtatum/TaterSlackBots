@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "SB.StanLee": {
+      "commandName": "Project",
+      "commandLineArgs": "--interactive",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
