@@ -17,19 +17,6 @@ namespace SB.StanLee
 	{
 		public Startup(IConfiguration configuration)
 		{
-			//			var builder = new ConfigurationBuilder()
-			//				.SetBasePath(env.ContentRootPath)
-			//				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-			//#if DEVELOPMENT
-			//			builder.AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
-			//#endif
-			//#if PRODUCTION
-			//			    builder.AddJsonFile($"appsettings.Production.json", optional: true, reloadOnChange: true);
-			//#endif
-
-			//			builder.AddEnvironmentVariables();
-
-			//			Configuration = builder.Build();
 			Configuration = configuration;
 		}
 
@@ -40,11 +27,6 @@ namespace SB.StanLee
 			services.AddOptions();
 			services.AddSingleton(Configuration);
 			services.Configure<AppSettings>(Configuration);
-
-			//services.AddSingleton<IStanLeeBot, StanLeeBot>((ctx) =>
-			//{
-			//	var appSettings = ctx.Ge
-			//});
 		}
 
 		public void ConfigureContainer(ContainerBuilder builder)

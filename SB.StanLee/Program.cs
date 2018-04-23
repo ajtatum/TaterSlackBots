@@ -10,30 +10,24 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using DasMulli.AspNetCore.Hosting.WindowsServices;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using SB.StanLee.Classes;
 using SB.StanLee.Services;
 using Serilog;
-using Serilog.Events;
-using Serilog.Exceptions;
-using Serilog.Formatting.Compact;
 using static System.Console;
 
 namespace SB.StanLee
 {
-    class Program
-    {
-	    private const string RunAsServiceFlag = "--run-as-service";
-	    private const string ServiceWorkingDirectoryFlag = "--working-directory";
-	    private const string RegisterServiceFlag = "--register-service";
-	    private const string PreserveWorkingDirectoryFlag = "--preserve-working-directory";
-	    private const string UnregisterServiceFlag = "--unregister-service";
-	    private const string InteractiveFlag = "--interactive";
+	class Program
+	{
+		private const string RunAsServiceFlag = "--run-as-service";
+		private const string ServiceWorkingDirectoryFlag = "--working-directory";
+		private const string RegisterServiceFlag = "--register-service";
+		private const string PreserveWorkingDirectoryFlag = "--preserve-working-directory";
+		private const string UnregisterServiceFlag = "--unregister-service";
+		private const string InteractiveFlag = "--interactive";
 
-	    private const string ServiceName = "StanLeeSlackBot";
-	    private const string ServiceDisplayName = "Stan Lee SlackBot";
-	    private const string ServiceDescription = "An unofficial SlackBot for Stan Lee.";
+		private const string ServiceName = "StanLeeSlackBot";
+		private const string ServiceDisplayName = "Stan Lee SlackBot";
+		private const string ServiceDescription = "An unofficial SlackBot for Stan Lee.";
 
 		public static void Main(string[] args)
 		{
@@ -91,13 +85,13 @@ namespace SB.StanLee
 				Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
 			}
 
-			Log.Information("Starting {ServiceName} As a Service with {args}", ServiceName, args);
+			Log.Information($@"Starting ""{ServiceName}"" As a Service with {string.Join(", ", args)}");
 			BuildWebHost(args).RunAsService(ServiceName);
 		}
 
 		private static void RunInteractive(string[] args)
 		{
-			Log.Information("Starting {ServiceName} with {args}", ServiceName, args);
+			Log.Information($@"Starting ""{ServiceName}"" with {string.Join(", ", args)}");
 			BuildWebHost(args.Where(a => a != InteractiveFlag).ToArray()).Run();
 		}
 
@@ -179,38 +173,39 @@ namespace SB.StanLee
 			return arg;
 		}
 
-	    public static IWebHost BuildWebHost(string[] args)
+		public static IWebHost BuildWebHost(string[] args)
 		{
+			Log.Information($"Building Web Host with {string.Join(", ", args)}");
+
 			/* 
              * create an override configuration based on the command line args
              * to work around ASP.NET Core issue https://github.com/aspnet/MetaPackages/issues/221
              * wich should be fixed in 2.1.0.
              */
+			var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+			if (string.IsNullOrWhiteSpace(environment))
+				throw new NullReferenceException("Environment not found in ASPNETCORE_ENVIRONMENT");
+
+			WriteLine("Environment: {0}", environment);
+			
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(Directory.GetCurrentDirectory())
 				.AddCommandLine(args)
 				.Build();
 
 			return WebHost.CreateDefaultBuilder(args)
-				.UseEnvironment("Development")
 				.UseConfiguration(builder)
 				.ConfigureAppConfiguration((builderContext, config) =>
 				{
-					var env = builderContext.HostingEnvironment;
-
-					config.SetBasePath(env.ContentRootPath);
-
-					config.AddJsonFile("appsettings.json", false, true)
-						.AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
+					config.AddJsonFile("appsettings.json", false, true);
+					config.AddJsonFile($"appsettings.{environment}.json", true, true);
 
 					config.AddEnvironmentVariables();
 				})
 				.UseContentRoot(Directory.GetCurrentDirectory())
 				.ConfigureServices(services =>
 				{
-					//services.AddOptions();
-					//services.AddSingleton<IConfiguration>();
-					//services.AddSingleton(typeof(IOptions<>), typeof(AppSettings));
 					services.AddAutofac();
 				})
 				.UseStartup<Startup>()
