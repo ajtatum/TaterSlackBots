@@ -9,18 +9,18 @@ using SB.StanLee.Services;
 
 namespace SB.StanLee.Bots
 {
-    public class StanLeeBot : IStanLeeBot
+	public class StanLeeBot : IStanLeeBot
 	{
-	    private readonly AppSettings _appSettings;
-	    private readonly ILoggerFactory _loggerFactory;
-	    private readonly IMarvelService _marvelService;
-	    private readonly Serilog.ILogger _log;
+		private readonly IAppSettings _appSettings;
+		private readonly ILoggerFactory _loggerFactory;
+		private readonly IMarvelService _marvelService;
+		private readonly Serilog.ILogger _log;
 
 		public StanLeeBot(IOptions<AppSettings> appSettings, ILoggerFactory loggerFactory, Serilog.ILogger log, IMarvelService marvelService)
 		{
 			_appSettings = appSettings.Value;
 			_loggerFactory = loggerFactory;
-			_log = log;
+			_log = log.ForContext<StanLeeBot>();
 			_marvelService = marvelService;
 		}
 
@@ -33,7 +33,21 @@ namespace SB.StanLee.Bots
 				{
 					cfg.LoggerFactory = _loggerFactory;
 					cfg.WhenHandlerMatchMode = WhenHandlerMatchMode.FirstMatch;
+
+					cfg.OnSendMessageFailure = async (queue, msg, logger, e) =>
+					{
+						if (msg.SendAttempts <= 5)
+						{
+							logger?.LogWarning($"Failed to send message {msg.Text}. Tried {msg.SendAttempts} times");
+							await Task.Delay(1000 * msg.SendAttempts);
+							queue.Enqueue(msg);
+							return;
+						}
+
+						logger?.LogError($"Gave up trying to send message {msg.Text}");
+					};
 				});
+
 
 			bot.When(MatchFactory.Matches.Text("hello"), async conv =>
 				{

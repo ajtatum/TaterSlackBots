@@ -12,14 +12,14 @@ namespace SB.StanLee.Services
 	public class MarvelService : IMarvelService
 	{
 		private readonly AppSettings _appSettings;
-		private readonly Serilog.ILogger _log;
+		private readonly ILogger _log;
 
 		private static ApiService ApiService { get; set; }
 
-		public MarvelService(IOptions<AppSettings> appSettings, Serilog.ILogger log)
+		public MarvelService(IOptions<AppSettings> appSettings, ILogger log)
 		{
 			_appSettings = appSettings.Value;
-			_log = log;
+			_log = log.ForContext<MarvelService>();
 
 			ApiService = new ApiService(_appSettings.Marvel.PublicKey, _appSettings.Marvel.PrivateKey);
 
