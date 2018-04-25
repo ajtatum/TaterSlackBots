@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using SlackBotNet;
 using SB.StanLee.Classes;
+using SB.StanLee.Extensions;
 using SB.StanLee.Services;
 
 namespace SB.StanLee.Bots
@@ -16,9 +16,9 @@ namespace SB.StanLee.Bots
 		private readonly IMarvelService _marvelService;
 		private readonly Serilog.ILogger _log;
 
-		public StanLeeBot(IOptions<AppSettings> appSettings, ILoggerFactory loggerFactory, Serilog.ILogger log, IMarvelService marvelService)
+		public StanLeeBot(IAppSettings appSettings, ILoggerFactory loggerFactory, Serilog.ILogger log, IMarvelService marvelService)
 		{
-			_appSettings = appSettings.Value;
+			_appSettings = appSettings;
 			_loggerFactory = loggerFactory;
 			_log = log.ForContext<StanLeeBot>();
 			_marvelService = marvelService;

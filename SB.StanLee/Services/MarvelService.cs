@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using MarvelSharp;
 using MarvelSharp.Criteria;
 using MarvelSharp.Model;
-using Microsoft.Extensions.Options;
 using Serilog;
 using SB.StanLee.Classes;
 
@@ -11,24 +10,24 @@ namespace SB.StanLee.Services
 {
 	public class MarvelService : IMarvelService
 	{
-		private readonly AppSettings _appSettings;
 		private readonly ILogger _log;
+		private readonly IAppSettings _appSettings;
 
 		private static ApiService ApiService { get; set; }
 
-		public MarvelService(IOptions<AppSettings> appSettings, ILogger log)
+		public MarvelService(IAppSettings appSettings, ILogger log)
 		{
-			_appSettings = appSettings.Value;
+			_appSettings = appSettings;
 			_log = log.ForContext<MarvelService>();
 
 			ApiService = new ApiService(_appSettings.Marvel.PublicKey, _appSettings.Marvel.PrivateKey);
 
-			Log.Information("Marvel Service Connected");
+			_log.Information("Marvel Service Connected");
 		}
 
 		public async Task<Character> GetCharacter(string name)
 		{
-			Log.Information($"Searching for {name}.");
+			_log.Information($"Searching for {name}.");
 
 			var nameSearch = new CharacterCriteria()
 			{
@@ -40,7 +39,7 @@ namespace SB.StanLee.Services
 			if (response.Success)
 				return response.Data.Result.FirstOrDefault();
 
-			Log.Error(response.Code);
+			_log.Error(response.Code);
 			return null;
 		}
 	}

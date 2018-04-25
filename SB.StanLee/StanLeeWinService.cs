@@ -1,7 +1,5 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
 using PeterKottas.DotNetCore.WindowsService.Interfaces;
-using SB.StanLee.Bots;
 using Serilog;
 
 namespace SB.StanLee
@@ -13,8 +11,8 @@ namespace SB.StanLee
 	    public StanLeeWinService()
 	    {
 		    controller = null;
-			
 	    }
+
 	    public StanLeeWinService(IMicroServiceController controller)
 	    {
 		    this.controller = controller;

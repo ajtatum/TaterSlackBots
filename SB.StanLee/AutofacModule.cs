@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using AutofacSerilogIntegration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using SB.StanLee.Bots;
 using SB.StanLee.Classes;
 using SB.StanLee.Services;
@@ -18,12 +17,12 @@ namespace SB.StanLee
 
 			builder.RegisterLogger();
 			
-			builder.Register(c => new MarvelService(c.Resolve<IOptions<AppSettings>>(), c.Resolve<Serilog.ILogger>()))
+			builder.Register(c => new MarvelService(c.Resolve<IAppSettings>(), c.Resolve<Serilog.ILogger>()))
 				.As<IMarvelService>()
 				.InstancePerLifetimeScope();
 
 			builder.Register(c =>
-					new StanLeeBot(c.Resolve<IOptions<AppSettings>>(),
+					new StanLeeBot(c.Resolve<IAppSettings>(),
 						c.Resolve<ILoggerFactory>(),
 						c.Resolve<Serilog.ILogger>(),
 						c.Resolve<IMarvelService>()))

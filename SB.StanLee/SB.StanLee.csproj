@@ -3,23 +3,13 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <Configurations>Development;Production;Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|AnyCPU'">
-    <OutputPath>bin\Development\netcoreapp2.0\</OutputPath>
+    <OutputPath>bin\Development\netcoreapp2.0\win-x64\</OutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Middleware\**" />
-    <EmbeddedResource Remove="Middleware\**" />
-    <None Remove="Middleware\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Services\LogService.cs" />
-    <Compile Remove="Services\StanLeeWin32ServiceService.cs" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Autofac.Configuration" Version="4.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.1" />
@@ -59,19 +49,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.Development.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.json</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.Production.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>appsettings.json</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.Release.json">
       <DependentUpon>appsettings.json</DependentUpon>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
