@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SlackBotNet;
-using SB.StanLee.Classes;
-using SB.StanLee.Extensions;
-using SB.StanLee.Services;
+using TaterSlackBots.Common.Extensions;
+using TaterSlackBots.Common.Services;
+using TaterSlackBots.Common.Settings;
 
 namespace SB.StanLee.Bots
 {
-	public class StanLeeBot : IStanLeeBot
+	public class StanLeeBot : ITaterSlackBot
 	{
 		private readonly IAppSettings _appSettings;
 		private readonly ILoggerFactory _loggerFactory;
@@ -20,7 +20,7 @@ namespace SB.StanLee.Bots
 		{
 			_appSettings = appSettings;
 			_loggerFactory = loggerFactory;
-			_log = log.ForContext<StanLeeBot>();
+			_log = log;
 			_marvelService = marvelService;
 		}
 

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace SB.StanLee.Extensions
+namespace TaterSlackBots.Common.Extensions
 {
 	public static class ServiceCollectionExtensions
 	{

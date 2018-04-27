@@ -6,16 +6,16 @@ namespace SB.StanLee
 {
     public class StanLeeWinService : IMicroService
     {
-	    private IMicroServiceController controller;
+	    private IMicroServiceController _controller;
 
 	    public StanLeeWinService()
 	    {
-		    controller = null;
+		    _controller = null;
 	    }
 
 	    public StanLeeWinService(IMicroServiceController controller)
 	    {
-		    this.controller = controller;
+		    _controller = controller;
 	    }
 		
 	    public void Start()

@@ -4,9 +4,9 @@ using MarvelSharp;
 using MarvelSharp.Criteria;
 using MarvelSharp.Model;
 using Serilog;
-using SB.StanLee.Classes;
+using TaterSlackBots.Common.Settings;
 
-namespace SB.StanLee.Services
+namespace TaterSlackBots.Common.Services
 {
 	public class MarvelService : IMarvelService
 	{

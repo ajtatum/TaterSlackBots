@@ -1,4 +1,4 @@
-﻿namespace SB.StanLee.Classes
+﻿namespace TaterSlackBots.Common.Settings
 {
 	public interface IApplicationInsights
 	{

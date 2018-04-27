@@ -1,4 +1,4 @@
-﻿namespace SB.StanLee.Classes
+﻿namespace TaterSlackBots.Common.Settings
 {
 	public class AppSettings : IAppSettings
 	{
@@ -12,17 +12,13 @@
 
 	public class ServiceConfig : IServiceConfig
 	{
-		public ServiceConfig()
-		{
-			Name = "StanLeeSlackBot";
-			DisplayName = "Stan Lee SlackBot";
-			Description = "An unofficial Stan Lee Slackbot to help you find anything related to Marvel";
-		}
+		public StanLeeConfig StanLeeConfig { get; set; }
+	}
 
+	public class StanLeeConfig :  IServiceBotConfig
+	{
 		public string Name { get; set; }
-
 		public string DisplayName { get; set; }
-
 		public string Description { get; set; }
 	}
 

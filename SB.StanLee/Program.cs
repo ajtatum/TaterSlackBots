@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PeterKottas.DotNetCore.WindowsService;
-using SB.StanLee.Classes;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Extensions.Logging;
 using Serilog.Formatting.Compact;
+using TaterSlackBots.Common.Settings;
 using ILogger = Serilog.ILogger;
 
 namespace SB.StanLee
@@ -19,14 +20,20 @@ namespace SB.StanLee
 		{
 			Console.WriteLine("Configuring Logger and LoggerFactory");
 			var (log, loggerFactory) = ConfigureLogger<Program>();
+
+			Console.WriteLine("Configuring IoC");
+
+			var ioc = new IoC(Log.Logger);
+			var configuration = ioc.ConfigureApplication();
+			var services = ioc.ConfigureServices(configuration, loggerFactory, Log.Logger);
+			var di = ioc.ConfigureAutofac(services);
 			
 			ServiceRunner<StanLeeWinService>.Run(config =>
 			{
-				var serviceSettings = new ServiceConfig();
-
-				config.SetName(serviceSettings.Name);
-				config.SetDisplayName(serviceSettings.DisplayName);
-				config.SetDescription(serviceSettings.Description);
+				var appSettings = di.GetRequiredService<IAppSettings>();
+				config.SetName(appSettings.ServiceConfig.StanLeeConfig.Name);
+				config.SetDisplayName(appSettings.ServiceConfig.StanLeeConfig.DisplayName);
+				config.SetDescription(appSettings.ServiceConfig.StanLeeConfig.Description);
 
 				var name = config.GetDefaultName();
 
@@ -37,12 +44,7 @@ namespace SB.StanLee
 					serviceConfig.OnStart((service, extraParams) =>
 					{
 
-						Console.WriteLine("Configuring IoC");
-
-						var ioc = new IoC(Log.Logger);
-						var configuration = ioc.ConfigureApplication();
-						var services = ioc.ConfigureServices(configuration, loggerFactory, Log.Logger);
-						var di = ioc.ConfigureAutofac(services);
+						
 
 						log.Information($"Using the AppSettingsType: {configuration.GetValue<string>("AppSettingType")}");
 

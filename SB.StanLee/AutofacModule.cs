@@ -2,8 +2,8 @@
 using AutofacSerilogIntegration;
 using Microsoft.Extensions.Logging;
 using SB.StanLee.Bots;
-using SB.StanLee.Classes;
-using SB.StanLee.Services;
+using TaterSlackBots.Common.Services;
+using TaterSlackBots.Common.Settings;
 
 namespace SB.StanLee
 {
@@ -26,7 +26,7 @@ namespace SB.StanLee
 						c.Resolve<ILoggerFactory>(),
 						c.Resolve<Serilog.ILogger>(),
 						c.Resolve<IMarvelService>()))
-				.As<IStanLeeBot>()
+				.As<ITaterSlackBot>()
 				.SingleInstance()
 				.OnActivating(async args => await args.Instance.Start());
 		}

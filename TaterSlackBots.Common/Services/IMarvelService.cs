@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using MarvelSharp.Model;
 
-namespace SB.StanLee.Services
+namespace TaterSlackBots.Common.Services
 {
     public interface IMarvelService
     {

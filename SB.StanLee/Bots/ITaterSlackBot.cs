@@ -2,7 +2,7 @@
 
 namespace SB.StanLee.Bots
 {
-	public interface IStanLeeBot
+	public interface ITaterSlackBot
 	{
 		Task Start();
 	}

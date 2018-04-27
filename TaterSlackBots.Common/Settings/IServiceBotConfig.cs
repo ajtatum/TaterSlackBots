@@ -1,6 +1,6 @@
-﻿namespace SB.StanLee.Classes
+﻿namespace TaterSlackBots.Common.Settings
 {
-	public interface IServiceConfig
+	public interface IServiceBotConfig
 	{
 		string Name { get; set; }
 		string DisplayName { get; set; }

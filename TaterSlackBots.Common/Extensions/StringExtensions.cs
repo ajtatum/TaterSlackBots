@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace SB.StanLee.Extensions
+namespace TaterSlackBots.Common.Extensions
 {
     public static class StringExtensions
     {

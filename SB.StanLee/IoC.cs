@@ -1,14 +1,14 @@
-﻿using System;
-using System.IO;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SB.StanLee.Bots;
-using SB.StanLee.Classes;
-using SB.StanLee.Extensions;
 using Serilog;
+using System;
+using System.IO;
+using TaterSlackBots.Common.Extensions;
+using TaterSlackBots.Common.Settings;
 using ILogger = Serilog.ILogger;
 
 namespace SB.StanLee
@@ -69,7 +69,7 @@ namespace SB.StanLee
 
 			using (var scope = container.BeginLifetimeScope())
 			{
-				var stanLeeBot = scope.Resolve<IStanLeeBot>();
+				var stanLeeBot = scope.Resolve<ITaterSlackBot>();
 			}
 
 			AutofacServiceProvider = new AutofacServiceProvider(container);
