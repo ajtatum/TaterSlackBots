@@ -14,9 +14,9 @@
     },
     "Release": {
       "commandName": "Project",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Release"
-      }
+					"environmentVariables": {
+						"ASPNETCORE_ENVIRONMENT": "Production"
+					}
     }
   }
 }

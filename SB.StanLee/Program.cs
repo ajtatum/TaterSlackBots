@@ -43,9 +43,6 @@ namespace SB.StanLee
 
 					serviceConfig.OnStart((service, extraParams) =>
 					{
-
-						
-
 						log.Information($"Using the AppSettingsType: {configuration.GetValue<string>("AppSettingType")}");
 
 						log.Information($"Service {name} starting. Extra params: {{extraParams}}", extraParams);
@@ -88,7 +85,7 @@ namespace SB.StanLee
 				.Enrich.WithProperty("ASPNETCORE_ENVIRONMENT", environment)
 				.WriteTo.Console()
 				.WriteTo.Debug()
-				.WriteTo.Seq("http://localhost:5341", apiKey: "tz0UsDNNCKMQF1dYRX38", compact: true)
+				//.WriteTo.Seq("http://localhost:5341", apiKey: "tz0UsDNNCKMQF1dYRX38", compact: true)
 				.WriteTo.File(
 					new CompactJsonFormatter(),
 					@"D:\home\LogFiles\Application\Console.StanLeeSlackBot.txt",

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using MarvelSharp;
-using MarvelSharp.Criteria;
-using MarvelSharp.Model;
+using MarvelousApi;
+using MarvelousApi.Criteria;
+using MarvelousApi.Model;
 using Serilog;
 using TaterSlackBots.Common.Settings;
 

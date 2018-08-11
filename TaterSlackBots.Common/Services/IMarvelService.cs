@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using MarvelSharp.Model;
+using MarvelousApi.Model;
 
 namespace TaterSlackBots.Common.Services
 {
