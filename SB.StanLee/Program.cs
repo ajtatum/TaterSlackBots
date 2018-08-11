@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PeterKottas.DotNetCore.WindowsService;
+using SB.StanLee.Bots;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Extensions.Logging;
 using Serilog.Formatting.Compact;
+using TaterSlackBots.Common.Extensions;
+using TaterSlackBots.Common.Services;
 using TaterSlackBots.Common.Settings;
 using ILogger = Serilog.ILogger;
 
@@ -16,52 +21,50 @@ namespace SB.StanLee
 {
 	public class Program
 	{
-		public static void Main(string[] args)
+		public static async Task Main(string[] args)
 		{
 			Console.WriteLine("Configuring Logger and LoggerFactory");
-			var (log, loggerFactory) = ConfigureLogger<Program>();
+			var (seriLogger, loggerFactory) = ConfigureLogger<Program>();
 
-			Console.WriteLine("Configuring IoC");
+			var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-			var ioc = new IoC(Log.Logger);
-			var configuration = ioc.ConfigureApplication();
-			var services = ioc.ConfigureServices(configuration, loggerFactory, Log.Logger);
-			var di = ioc.ConfigureAutofac(services);
-			
-			ServiceRunner<StanLeeWinService>.Run(config =>
-			{
-				var appSettings = di.GetRequiredService<IAppSettings>();
-				config.SetName(appSettings.ServiceConfig.StanLeeConfig.Name);
-				config.SetDisplayName(appSettings.ServiceConfig.StanLeeConfig.DisplayName);
-				config.SetDescription(appSettings.ServiceConfig.StanLeeConfig.Description);
+			if (string.IsNullOrWhiteSpace(environment))
+				throw new NullReferenceException("Environment not found in ASPNETCORE_ENVIRONMENT");
 
-				var name = config.GetDefaultName();
-
-				config.Service(serviceConfig =>
+			var host = new HostBuilder()
+				 .ConfigureHostConfiguration(configHost =>
+				 {
+					 configHost.SetBasePath(Directory.GetCurrentDirectory());
+					 configHost.AddJsonFile("hostsettings.json", optional: true);
+					 configHost.AddEnvironmentVariables(prefix: "ASPNETCORE_");
+					 configHost.AddCommandLine(args);
+				 })
+				 .ConfigureAppConfiguration((hostContext, configApp) =>
+				 {
+					 configApp.AddJsonFile("appsettings.json", optional: true);
+					 configApp.AddJsonFile($"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true);
+					 configApp.AddEnvironmentVariables(prefix: "ASPNETCORE_");
+					 configApp.AddCommandLine(args);
+				 })
+				.ConfigureServices((hostContext, services) =>
 				{
-					serviceConfig.ServiceFactory((extraArguments, controller) => new StanLeeWinService(controller));
+					services.AddOptions();
+					services.AddSingleton(hostContext.Configuration);
 
-					serviceConfig.OnStart((service, extraParams) =>
+					var appSettings = new AppSettings();
+					services.ConfigurePOCO<IAppSettings>(hostContext.Configuration, appSettings);
+
+					services.AddTransient<IMarvelService>(ms =>
 					{
-						log.Information($"Using the AppSettingsType: {configuration.GetValue<string>("AppSettingType")}");
-
-						log.Information($"Service {name} starting. Extra params: {{extraParams}}", extraParams);
-						Console.WriteLine("Service {0} starting", name);
-						service.Start();
+						var appService = ms.GetService<IAppSettings>();
+						return new MarvelService(appService, seriLogger);
 					});
 
-					serviceConfig.OnStop(service =>
-					{
-						Console.WriteLine("Service {0} stopped", name);
-						service.Stop();
-					});
+					services.AddHostedService<StanLeeBot>();
+				})
+				.UseSerilog();
 
-					serviceConfig.OnError(e =>
-					{
-						Log.Error(e, $"Service {name} error");
-					});
-				});
-			});
+			await host.RunAsServiceAsync();
 		}
 
 		public static (ILogger, ILoggerFactory) ConfigureLogger<T>()
